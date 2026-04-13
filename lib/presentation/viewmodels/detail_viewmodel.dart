@@ -17,21 +17,16 @@ class DetailViewModel extends ChangeNotifier {
   String get error => _error;
   bool get hasError => _error.isNotEmpty;
 
-  // ✅ FIXED TRAILER LOGIC
   Video? get trailer {
     if (_detail == null || _detail!.videos.isEmpty) return null;
 
     try {
-      // 🎯 Get proper YouTube Trailer
       return _detail!.videos.firstWhere(
         (v) => v.site == "YouTube" && v.type == "Trailer",
       );
     } catch (_) {
       try {
-        // 🔁 fallback: any YouTube video
-        return _detail!.videos.firstWhere(
-          (v) => v.site == "YouTube",
-        );
+        return _detail!.videos.firstWhere((v) => v.site == "YouTube");
       } catch (_) {
         return null;
       }

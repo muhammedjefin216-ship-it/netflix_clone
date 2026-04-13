@@ -19,7 +19,7 @@ class _TrailerScreenState extends State<TrailerScreen> {
 
     _controller = YoutubePlayerController(
       initialVideoId: widget.videoKey,
-      flags: const YoutubePlayerFlags(
+      flags:  YoutubePlayerFlags(
         autoPlay: true,
         mute: false,
       ),
@@ -37,7 +37,7 @@ class _TrailerScreenState extends State<TrailerScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text("Trailer"),
+        title:  Text("Trailer"),
         backgroundColor: Colors.black,
       ),
       body: YoutubePlayer(

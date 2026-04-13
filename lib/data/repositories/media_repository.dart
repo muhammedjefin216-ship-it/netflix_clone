@@ -7,7 +7,6 @@ import '../../core/network/api_client.dart';
 class MediaRepository {
   final Dio _dio = ApiClient.instance.dio;
 
-  // ── Home Screen ───────────────────────────────────────
   Future<List<Media>> getTrending() async {
     final res = await _dio.get(ApiConstants.trendingAll);
     return _parseMediaList(res.data['results']);
@@ -43,7 +42,6 @@ class MediaRepository {
     return _parseMediaList(res.data['results'], defaultType: 'tv');
   }
 
-  // ── Detail Screen ─────────────────────────────────────
   Future<MediaDetail> getMovieDetail(int id) async {
     final res = await _dio.get('${ApiConstants.movieDetails}/$id');
     final detail = MediaDetail.fromJson(res.data, 'movie');
@@ -55,8 +53,8 @@ class MediaRepository {
     ]);
 
     return detail.copyWith(
-      cast:    futures[0] as List<Cast>,
-      videos:  futures[1] as List<Video>,
+      cast: futures[0] as List<Cast>,
+      videos: futures[1] as List<Video>,
       similar: futures[2] as List<Media>,
     );
   }
@@ -72,22 +70,17 @@ class MediaRepository {
     ]);
 
     return detail.copyWith(
-      cast:    futures[0] as List<Cast>,
-      videos:  futures[1] as List<Video>,
+      cast: futures[0] as List<Cast>,
+      videos: futures[1] as List<Video>,
       similar: futures[2] as List<Media>,
     );
   }
 
-  // ── Search ────────────────────────────────────────────
   Future<List<Media>> searchMulti(String query, {int page = 1}) async {
     if (query.trim().isEmpty) return [];
     final res = await _dio.get(
       ApiConstants.searchMulti,
-      queryParameters: {
-        'query':          query,
-        'page':           page,
-        'include_adult':  false,
-      },
+      queryParameters: {'query': query, 'page': page, 'include_adult': false},
     );
     final results = (res.data['results'] as List)
         .where((item) => item['media_type'] != 'person')
@@ -95,19 +88,19 @@ class MediaRepository {
     return _parseMediaList(results);
   }
 
-  // ── Private Helpers ───────────────────────────────────
   List<Media> _parseMediaList(
     List<dynamic> results, {
     String defaultType = '',
   }) {
-    return results.map((json) {
-      if (defaultType.isNotEmpty && json['media_type'] == null) {
-        json['media_type'] = defaultType;
-      }
-      return Media.fromJson(json);
-    })
-    .where((m) => m.posterPath != null || m.backdropPath != null)
-    .toList();
+    return results
+        .map((json) {
+          if (defaultType.isNotEmpty && json['media_type'] == null) {
+            json['media_type'] = defaultType;
+          }
+          return Media.fromJson(json);
+        })
+        .where((m) => m.posterPath != null || m.backdropPath != null)
+        .toList();
   }
 
   Future<List<Cast>> _getCredits(String basePath) async {

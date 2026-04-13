@@ -9,25 +9,22 @@ import 'presentation/viewmodels/detail_viewmodel.dart';
 import 'presentation/viewmodels/watchlist_viewmodel.dart';
 import 'presentation/views/splash/splash_view.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Force portrait mode
-  SystemChrome.setPreferredOrientations([
+  await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
   ]);
 
-  // Status bar transparent
   SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
+     SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.light,
       systemNavigationBarColor: AppTheme.background,
     ),
   );
 
-  runApp(const NetflixCloneApp());
+  runApp( NetflixCloneApp());
 }
 
 class NetflixCloneApp extends StatelessWidget {
@@ -37,35 +34,33 @@ class NetflixCloneApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        // ── Repository ──────────────────────────────────
-        // Single instance shared across all ViewModels
-        Provider<MediaRepository>(create: (_) => MediaRepository()),
-
-        // ── ViewModels ──────────────────────────────────
-        ChangeNotifierProxyProvider<MediaRepository, HomeViewModel>(
-          create: (ctx) => HomeViewModel(ctx.read<MediaRepository>()),
-          update: (_, repo, vm) => vm ?? HomeViewModel(repo),
+        Provider(
+          create: (_) => MediaRepository(),
         ),
 
-        ChangeNotifierProxyProvider<MediaRepository, SearchViewModel>(
-          create: (ctx) => SearchViewModel(ctx.read<MediaRepository>()),
-          update: (_, repo, vm) => vm ?? SearchViewModel(repo),
+        ChangeNotifierProvider(
+          create: (context) =>
+              HomeViewModel(context.read<MediaRepository>()),
+        ),
+        ChangeNotifierProvider(
+          create: (context) =>
+              SearchViewModel(context.read<MediaRepository>()),
+        ),
+        ChangeNotifierProvider(
+          create: (context) =>
+              DetailViewModel(context.read<MediaRepository>()),
         ),
 
-        ChangeNotifierProxyProvider<MediaRepository, DetailViewModel>(
-          create: (ctx) => DetailViewModel(ctx.read<MediaRepository>()),
-          update: (_, repo, vm) => vm ?? DetailViewModel(repo),
-        ),
-
-        ChangeNotifierProvider<WatchlistViewModel>(
+        ChangeNotifierProvider(
           create: (_) => WatchlistViewModel()..load(),
         ),
       ],
       child: MaterialApp(
-        title: 'Netflix Clone',
         debugShowCheckedModeBanner: false,
+        title: 'Netflix Clone',
         theme: AppTheme.darkTheme,
-        home: const SplashView(),
+
+        home:  SplashView(),
       ),
     );
   }
